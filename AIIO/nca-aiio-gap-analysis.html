@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NCA-AIIO Gap Analysis</title>
+<style>
+:root {
+  --bg: #0F1923;
+  --surface: #162032;
+  --surface-el: #1E2D45;
+  --accent: #76B900;
+  --correct: #00E5B0;
+  --incorrect: #FF4D6A;
+  --warning: #FFB84D;
+  --text: #E8ECF1;
+  --text-sec: #8899AA;
+  --border: #2A3A52;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+.container { max-width: 860px; margin: 0 auto; padding: 32px 20px; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+h2 { font-size: 20px; font-weight: 700; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+h3 { font-size: 16px; font-weight: 600; margin: 20px 0 10px; color: var(--accent); }
+p { margin-bottom: 12px; }
+.meta { color: var(--text-sec); font-size: 13px; margin-bottom: 24px; }
+.meta strong { color: var(--text); }
+hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13px; }
+th { background: var(--surface-el); color: var(--text-sec); font-weight: 600; text-align: left; padding: 10px 12px; border: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+td { padding: 9px 12px; border: 1px solid var(--border); background: var(--surface); }
+tr:hover td { background: var(--surface-el); }
+
+.badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+.badge-good { background: rgba(0,229,176,0.15); color: var(--correct); }
+.badge-ok { background: rgba(255,184,77,0.15); color: var(--warning); }
+.badge-thin { background: rgba(255,77,106,0.15); color: var(--incorrect); }
+.badge-none { background: rgba(255,77,106,0.25); color: var(--incorrect); font-weight: 700; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+.card h4 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.card ul { margin: 6px 0 0 18px; font-size: 13px; color: var(--text-sec); }
+.card li { margin: 3px 0; }
+
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+.summary-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+.summary-item .num { font-size: 28px; font-weight: 700; }
+.summary-item .label { font-size: 12px; color: var(--text-sec); margin-top: 4px; }
+
+.back-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--surface-el); border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; color: var(--text); font-size: 13px; font-weight: 500; margin-bottom: 20px; }
+.back-btn:hover { border-color: var(--accent); text-decoration: none; }
+
+.updated { background: rgba(118,185,0,0.1); border: 1px solid var(--accent); border-radius: 8px; padding: 14px 18px; margin: 16px 0; font-size: 13px; }
+.updated strong { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="nca-aiio-study-suite.html" class="back-btn">&larr; Back to Study Suite</a>
+
+  <h1>NCA-AIIO Gap Analysis</h1>
+  <div class="meta">
+    <strong>Source:</strong> NVIDIA Official Study Guide (NCA-AIIO, Feb 2026)<br>
+    <strong>Question bank:</strong> 163 questions (50 original + 95 from NVIDIA practice tests 1-4 + 18 gap coverage)
+  </div>
+
+  <div class="summary-grid">
+    <div class="summary-item">
+      <div class="num" style="color: var(--correct)">13</div>
+      <div class="label">Well-covered subtopics</div>
+    </div>
+    <div class="summary-item">
+      <div class="num" style="color: var(--warning)">6</div>
+      <div class="label">Thin coverage (1 question)</div>
+    </div>
+    <div class="summary-item">
+      <div class="num" style="color: var(--incorrect)">1</div>
+      <div class="label">Zero coverage subtopic</div>
+    </div>
+    <div class="summary-item">
+      <div class="num" style="color: var(--text-sec)">10</div>
+      <div class="label">Missing technologies (now added)</div>
+    </div>
+  </div>
+
+  <div class="updated">
+    <strong>Updated 2026-03-14:</strong> 18 gap-coverage questions (Q145-Q162) added addressing all priority areas. Total question bank: <strong>163 questions</strong>.
+  </div>
+
+  <hr>
+
+  <h2>Coverage Map</h2>
+
+  <h3>Domain 1: Essential AI Knowledge (38%) &mdash; 8 subtopics</h3>
+  <table>
+    <tr><th>#</th><th>Official Subtopic</th><th>Coverage</th><th>Questions</th></tr>
+    <tr><td>1.1</td><td>NVIDIA software stack</td><td><span class="badge badge-good">Good</span></td><td>Q0,Q3,Q5,Q8,Q9,Q11,Q12,Q13,Q16</td></tr>
+    <tr><td>1.2</td><td>Training vs inference requirements</td><td><span class="badge badge-good">Good</span></td><td>Q7,Q14,Q17</td></tr>
+    <tr><td>1.3</td><td>AI vs ML vs DL</td><td><span class="badge badge-thin">Thin (1q)</span></td><td>Q2</td></tr>
+    <tr><td>1.4</td><td>AI adoption factors</td><td><span class="badge badge-thin">Thin (1q)</span></td><td>Q4</td></tr>
+    <tr><td>1.5</td><td>AI use cases &amp; industries</td><td><span class="badge badge-thin">Thin (1q)</span></td><td>Q15 (automotive only)</td></tr>
+    <tr><td>1.6</td><td>NVIDIA solutions purpose/use case</td><td><span class="badge badge-good">Good</span></td><td>Multiple</td></tr>
+    <tr><td>1.7</td><td>AI lifecycle software components</td><td><span class="badge badge-ok">OK (2q)</span></td><td>Q6,Q18</td></tr>
+    <tr><td>1.8</td><td>GPU vs CPU architecture</td><td><span class="badge badge-ok">OK (2q)</span></td><td>Q1,Q10</td></tr>
+  </table>
+
+  <h3>Domain 2: AI Infrastructure (40%) &mdash; 10 subtopics</h3>
+  <table>
+    <tr><th>#</th><th>Official Subtopic</th><th>Coverage</th><th>Questions</th></tr>
+    <tr><td>2.1</td><td>Hardware requirements for AI tasks</td><td><span class="badge badge-ok">Partial</span></td><td>Q23,Q26,Q31</td></tr>
+    <tr><td>2.2</td><td>Scale GPU infrastructure</td><td><span class="badge badge-ok">OK (2q)</span></td><td>Q29,Q37</td></tr>
+    <tr><td>2.3</td><td>Power &amp; cooling in data centers</td><td><span class="badge badge-good">Good</span></td><td>Q26,Q27,Q35</td></tr>
+    <tr><td>2.4</td><td>On-prem vs cloud</td><td><span class="badge badge-thin">Thin (1q)</span></td><td>Q28</td></tr>
+    <tr><td>2.5</td><td>Cluster components</td><td><span class="badge badge-ok">Partial</span></td><td>Q29</td></tr>
+    <tr><td>2.6</td><td>Facility requirements</td><td><span class="badge badge-none">NONE</span></td><td>&mdash;</td></tr>
+    <tr><td>2.7</td><td>Networking requirements for AI</td><td><span class="badge badge-good">Good</span></td><td>Q19,Q20,Q21,Q37</td></tr>
+    <tr><td>2.8</td><td>DC networking protocols &amp; concepts</td><td><span class="badge badge-good">Good</span></td><td>Q22,Q25,Q30</td></tr>
+    <tr><td>2.9</td><td>High-speed network options</td><td><span class="badge badge-good">Good</span></td><td>Q32,Q33,Q38</td></tr>
+    <tr><td>2.10</td><td>DPU purpose &amp; benefits</td><td><span class="badge badge-thin">Thin (1q)</span></td><td>Q24</td></tr>
+  </table>
+
+  <h3>Domain 3: AI Operations (22%) &mdash; 4 subtopics</h3>
+  <table>
+    <tr><th>#</th><th>Official Subtopic</th><th>Coverage</th><th>Questions</th></tr>
+    <tr><td>3.1</td><td>DC management &amp; monitoring</td><td><span class="badge badge-ok">OK (3q)</span></td><td>Q39,Q46,Q48</td></tr>
+    <tr><td>3.2</td><td>Orchestration &amp; job scheduling</td><td><span class="badge badge-ok">OK (3q)</span></td><td>Q41,Q42,Q47</td></tr>
+    <tr><td>3.3</td><td>GPU monitoring metrics</td><td><span class="badge badge-ok">Partial (2q)</span></td><td>Q43,Q45</td></tr>
+    <tr><td>3.4</td><td>Virtualization for AI</td><td><span class="badge badge-good">Good (3q)</span></td><td>Q40,Q44,Q49</td></tr>
+  </table>
+
+  <hr>
+
+  <h2>Topics with Zero Coverage (Now Addressed)</h2>
+
+  <div class="card">
+    <h4>1. Facility Requirements (subtopic 2.6)</h4>
+    <ul>
+      <li>Physical space, floor loading, weight per rack</li>
+      <li>Fire suppression systems for high-density compute</li>
+      <li>UPS and power redundancy (N+1, 2N)</li>
+      <li>Electrical distribution and PDU considerations</li>
+      <li>Physical security and access control</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>2. BMC (Baseboard Management Controller)</h4>
+    <ul>
+      <li>Out-of-band remote hardware management</li>
+      <li>Lights-out management (power cycle, BIOS, console access remotely)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>3. GPUDirect Storage</h4>
+    <ul>
+      <li>Direct path between storage devices and GPU memory (bypasses CPU and system memory)</li>
+      <li>Distinct from GPUDirect RDMA (which is GPU-to-NIC)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>4. NVIDIA Container Toolkit</h4>
+    <ul>
+      <li>Enables Docker/Kubernetes containers to access host GPUs</li>
+      <li>Lighter than VMs, preferred for AI workloads</li>
+      <li>Deployed by GPU Operator in Kubernetes but also standalone</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>5. Containers vs VMs for AI</h4>
+    <ul>
+      <li>Containers: lighter overhead, faster startup, preferred for AI</li>
+      <li>VMs: stronger isolation, better multi-tenancy, more overhead</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>6. NVIDIA Dynamo</h4>
+    <ul><li>Next-generation inference engine</li></ul>
+  </div>
+
+  <div class="card">
+    <h4>7. Run:ai (now part of NVIDIA)</h4>
+    <ul>
+      <li>GPU pooling across clusters</li>
+      <li>Fractional GPU allocation</li>
+      <li>Intelligent scheduling for AI workloads</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>8. Grace Hopper Superchip</h4>
+    <ul>
+      <li>Combined Grace CPU + H100 GPU in a single module</li>
+      <li>For workloads requiring tight CPU-GPU coupling</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>9. GPU Generation Comparisons</h4>
+    <ul>
+      <li>A100: 80GB HBM2e, Ampere architecture</li>
+      <li>H100: 80GB HBM3, Hopper architecture</li>
+      <li>H200: 141GB HBM3e (memory-enhanced H100)</li>
+      <li>B100/B200: Blackwell architecture (latest generation)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>10. Omniverse / Digital Twins</h4>
+    <ul>
+      <li>Manufacturing use case: predictive maintenance, quality inspection, digital twins</li>
+      <li>NVIDIA Omniverse platform</li>
+    </ul>
+  </div>
+
+  <hr>
+
+  <h2>Topics with Thin Coverage</h2>
+
+  <div class="card">
+    <h4>1.3 AI vs ML vs DL <span class="badge badge-thin">1 question</span></h4>
+    <ul>
+      <li>Supervised vs unsupervised vs reinforcement learning</li>
+      <li>Key architectures: CNNs, RNNs, Transformers</li>
+      <li>When to use ML vs DL (data size, complexity trade-offs)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>1.4 AI Adoption Factors <span class="badge badge-thin">1 question</span></h4>
+    <ul>
+      <li>Transfer learning and pre-trained models lowering barrier</li>
+      <li>Cloud GPU-as-a-Service democratizing access</li>
+      <li>Transformer architecture breakthrough</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>1.5 AI Use Cases &amp; Industries <span class="badge badge-thin">1 question</span></h4>
+    <ul>
+      <li>Healthcare: drug discovery, medical imaging, genomics</li>
+      <li>Finance: fraud detection, algorithmic trading, risk assessment</li>
+      <li>Manufacturing: predictive maintenance, digital twins (Omniverse)</li>
+      <li>Retail: recommendation engines, demand forecasting</li>
+      <li>Telecom: network optimization, 5G</li>
+      <li>Energy: grid optimization, exploration</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>2.4 On-prem vs Cloud <span class="badge badge-thin">1 question</span></h4>
+    <ul>
+      <li>CAPEX vs OPEX trade-off</li>
+      <li>Hybrid approach (cloud for experimentation, on-prem for production)</li>
+      <li>Time-to-deploy differences</li>
+      <li>"Noisy neighbor" in cloud</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>2.10 DPU Benefits <span class="badge badge-thin">1 question</span></h4>
+    <ul>
+      <li>BlueField DPU runs its own OS</li>
+      <li>"Third pillar" alongside CPU and GPU</li>
+      <li>Secure multi-tenancy and workload isolation</li>
+      <li>NVMe-oF storage offload</li>
+      <li>Zero-trust security model</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h4>3.3 GPU Monitoring Metrics <span class="badge badge-thin">2 questions</span></h4>
+    <ul>
+      <li>Thermal throttling thresholds (~83-90C)</li>
+      <li>PCIe / NVLink throughput monitoring</li>
+      <li>Clock speed (base vs boost, throttling indicators)</li>
+      <li>GPU utilization vs memory utilization interpretation</li>
+      <li>Power draw relative to TDP</li>
+    </ul>
+  </div>
+
+  <hr>
+  <p style="font-size: 12px; color: var(--text-sec); text-align: center; margin-top: 24px;">
+    Gap analysis for NCA-AIIO Study Suite &middot; <a href="nca-aiio-study-suite.html">Back to Study Suite</a>
+  </p>
+</div>
+</body>
+</html>
