@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NCA-AIIO Practice Exam</title>
+<style>
+  :root {
+    --bg: #0B1426;
+    --surface: #131E33;
+    --surface2: #1A2740;
+    --accent: #00E5B0;
+    --accent-dim: #00E5B033;
+    --text: #E8ECF1;
+    --text-dim: #8899AA;
+    --correct: #00E5B0;
+    --incorrect: #FF4D6A;
+    --warning: #FFB84D;
+    --border: #2A3A52;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  .header h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .header .badge {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* Progress bar */
+  .progress-container {
+    margin-bottom: 24px;
+  }
+
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  /* Domain tag */
+  .domain-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+  }
+
+  .domain-tag.essential { background: #1a3a5c; color: #5BA8FF; }
+  .domain-tag.infra { background: #1a3c2e; color: #00E5B0; }
+  .domain-tag.ops { background: #3a2a1a; color: #FFB84D; }
+
+  /* Question */
+  .question-text {
+    font-size: 17px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  /* Options */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+
+  .option:hover:not(.disabled) {
+    border-color: var(--accent);
+    background: var(--surface2);
+  }
+
+  .option.selected {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .option.correct {
+    border-color: var(--correct);
+    background: #00E5B015;
+  }
+
+  .option.incorrect {
+    border-color: var(--incorrect);
+    background: #FF4D6A15;
+  }
+
+  .option.disabled { cursor: default; }
+
+  .option-letter {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+
+  .option.selected .option-letter {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+
+  .option.correct .option-letter {
+    background: var(--correct);
+    color: var(--bg);
+    border-color: var(--correct);
+  }
+
+  .option.incorrect .option-letter {
+    background: var(--incorrect);
+    color: white;
+    border-color: var(--incorrect);
+  }
+
+  .option-text { font-size: 15px; padding-top: 3px; }
+
+  /* Explanation */
+  .explanation {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    display: none;
+  }
+
+  .explanation.show { display: block; }
+  .explanation strong { color: var(--text); }
+
+  /* Buttons */
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    gap: 12px;
+  }
+
+  .btn {
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s ease;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover { border-color: var(--text-dim); }
+
+  .btn-ghost {
+    background: none;
+    color: var(--text-dim);
+    padding: 10px 12px;
+  }
+
+  .btn-ghost:hover { color: var(--text); }
+
+  /* Timer */
+  .timer {
+    font-size: 14px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--text-dim);
+  }
+
+  .timer.warning { color: var(--warning); }
+  .timer.danger { color: var(--incorrect); }
+
+  /* Start screen */
+  .start-screen {
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+  .start-screen h2 {
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+
+  .start-screen .subtitle {
+    color: var(--text-dim);
+    font-size: 15px;
+    margin-bottom: 32px;
+  }
+
+  .exam-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+
+  .info-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .info-card .label {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  .info-card .value {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .mode-select {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+
+  .mode-btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.15s ease;
+  }
+
+  .mode-btn:hover { border-color: var(--accent); }
+  .mode-btn.active { border-color: var(--accent); background: var(--accent-dim); }
+
+  .mode-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+  }
+
+  /* Results screen */
+  .results-screen { padding: 40px 0; }
+
+  .results-screen h2 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+
+  .score-display {
+    text-align: center;
+    margin: 24px 0;
+  }
+
+  .score-circle {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 4px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+  }
+
+  .score-circle.pass { border-color: var(--correct); }
+  .score-circle.fail { border-color: var(--incorrect); }
+
+  .score-number {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .score-circle.pass .score-number { color: var(--correct); }
+  .score-circle.fail .score-number { color: var(--incorrect); }
+
+  .score-label { font-size: 13px; color: var(--text-dim); }
+
+  .domain-breakdown {
+    margin: 24px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .domain-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-radius: 8px;
+  }
+
+  .domain-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .domain-score {
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  .domain-bar {
+    width: 120px;
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .domain-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  /* Review */
+  .review-item {
+    margin-bottom: 20px;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: 8px;
+    border-left: 3px solid var(--border);
+  }
+
+  .review-item.was-correct { border-left-color: var(--correct); }
+  .review-item.was-incorrect { border-left-color: var(--incorrect); }
+
+  .review-q {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .review-answer {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .review-answer span { font-weight: 600; }
+  .review-answer .correct-text { color: var(--correct); }
+  .review-answer .incorrect-text { color: var(--incorrect); }
+
+  /* Question navigator */
+  .q-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 16px 0;
+  }
+
+  .q-nav-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    transition: all 0.15s ease;
+  }
+
+  .q-nav-btn.answered { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
+  .q-nav-btn.current { border-color: var(--text); color: var(--text); }
+  .q-nav-btn.flagged { background: #FFB84D22; color: var(--warning); border-color: var(--warning); }
+
+  .flag-btn {
+    font-size: 13px;
+    color: var(--text-dim);
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px 8px;
+  }
+
+  .flag-btn.flagged { color: var(--warning); }
+
+  @media (max-width: 600px) {
+    .exam-info { grid-template-columns: 1fr; }
+    .mode-select { flex-direction: column; align-items: center; }
+    .actions { flex-direction: column; }
+    .actions .btn { width: 100%; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="container" id="app"></div>
+
+<script>
+const QUESTIONS = [
+  // === DOMAIN 1: Essential AI Knowledge (38%) - 19 questions ===
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "Which NVIDIA tool is specifically designed to optimize trained deep learning models for high-performance inference?",
+    options: ["CUDA", "TensorRT", "NeMo", "NCCL"],
+    correct: 1,
+    explanation: "TensorRT is NVIDIA's inference optimizer and runtime. It takes trained models and optimizes them through layer fusion, precision calibration (FP16/INT8), and kernel auto-tuning for maximum throughput on NVIDIA GPUs. CUDA is the parallel computing platform, NeMo is for training/fine-tuning, and NCCL is for multi-GPU communication."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "What is the primary architectural difference between GPUs and CPUs that makes GPUs better suited for deep learning?",
+    options: [
+      "GPUs have larger cache memory per core",
+      "GPUs have thousands of smaller cores optimized for parallel processing",
+      "GPUs have higher single-thread clock speeds",
+      "GPUs use less power than CPUs"
+    ],
+    correct: 1,
+    explanation: "GPUs have thousands of simpler cores designed for parallel processing, which is ideal for the matrix multiplication and linear algebra operations that dominate deep learning workloads. CPUs have fewer but more powerful cores optimized for sequential, low-latency tasks."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "Which statement correctly describes the relationship between AI, machine learning, and deep learning?",
+    options: [
+      "Deep learning is the broadest category, containing ML and AI",
+      "AI, ML, and DL are three independent fields with no overlap",
+      "AI is the broadest field, ML is a subset of AI, and DL is a subset of ML",
+      "ML and DL are both subsets of AI, but ML and DL do not overlap"
+    ],
+    correct: 2,
+    explanation: "AI is the broadest field encompassing any system that simulates human intelligence. Machine Learning is a subset of AI where systems learn from data. Deep Learning is a subset of ML that uses multi-layer neural networks. The relationship is: AI > ML > DL."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "What is the primary function of NVIDIA Triton Inference Server?",
+    options: [
+      "Training large language models across multiple GPUs",
+      "Serving trained models for inference with support for multiple frameworks",
+      "Managing GPU clusters in a data center",
+      "Optimizing model weights through quantization"
+    ],
+    correct: 1,
+    explanation: "Triton Inference Server is NVIDIA's model serving solution that supports multiple frameworks (PyTorch, TensorFlow, ONNX, TensorRT) and provides features like dynamic batching, model versioning, and ensemble models. It handles the deployment and serving of models, not training or optimization."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "Which factor has NOT been a primary driver of the recent rapid adoption of AI?",
+    options: [
+      "Availability of massive datasets from internet and IoT",
+      "Advances in GPU computing power",
+      "Decrease in the number of available AI researchers",
+      "Open-source frameworks like PyTorch and TensorFlow"
+    ],
+    correct: 2,
+    explanation: "The rapid adoption of AI has been driven by massive data availability, GPU computing power, open-source frameworks, cloud computing, and algorithmic advances (like transformers). The number of AI researchers has actually increased, not decreased."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "What does NVIDIA NIM provide?",
+    options: [
+      "A suite of GPU monitoring and diagnostics tools",
+      "Pre-optimized inference microservices for rapid model deployment",
+      "A container registry for storing custom Docker images",
+      "A job scheduling system for HPC clusters"
+    ],
+    correct: 1,
+    explanation: "NVIDIA NIM (NVIDIA Inference Microservices) provides pre-built, optimized microservices that package AI models with industry-standard APIs, making it easy to deploy models in production without manual optimization. It abstracts the complexity of inference serving."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "In the AI development lifecycle, which step comes immediately after model training?",
+    options: [
+      "Data collection",
+      "Deployment to production",
+      "Validation and testing",
+      "Monitoring for data drift"
+    ],
+    correct: 2,
+    explanation: "After training, the model must be validated and tested to evaluate its performance on unseen data before being optimized and deployed. The lifecycle goes: data preparation > model development > training > validation/testing > optimization > deployment > monitoring."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "What is the primary difference between AI training and inference in terms of computational requirements?",
+    options: [
+      "Training requires less memory but more compute time than inference",
+      "Training typically requires more compute resources, higher precision, and larger batch sizes than inference",
+      "Inference requires higher precision floating-point operations than training",
+      "Training and inference have identical computational requirements"
+    ],
+    correct: 1,
+    explanation: "Training requires significantly more compute: higher precision (FP32 or mixed FP16/BF16), larger batch sizes for throughput, more GPU memory, and runs for hours/days. Inference can use lower precision (INT8, FP16), smaller batches, and is optimized for latency rather than throughput."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "What is NGC (NVIDIA GPU Cloud)?",
+    options: [
+      "A public cloud provider competing with AWS and Azure",
+      "A catalog of GPU-optimized containers, pre-trained models, and SDKs",
+      "NVIDIA's private data center hosting service",
+      "A GPU virtualization platform"
+    ],
+    correct: 1,
+    explanation: "NGC is NVIDIA's hub/registry that provides GPU-optimized software including containers, pre-trained models, Helm charts, and SDKs. It is not a cloud provider but a catalog/registry that works across clouds and on-premises infrastructure."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "Which NVIDIA framework is specifically designed for building, training, and fine-tuning large language models and AI models?",
+    options: [
+      "RAPIDS",
+      "TensorRT",
+      "NeMo",
+      "DCGM"
+    ],
+    correct: 2,
+    explanation: "NeMo (Neural Modules) is NVIDIA's framework for building, training, and fine-tuning AI models including LLMs, speech AI, and multimodal models. RAPIDS is for data science, TensorRT for inference optimization, and DCGM for GPU monitoring."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "What type of memory do modern NVIDIA data center GPUs (A100, H100) use to achieve high bandwidth?",
+    options: [
+      "DDR5 SDRAM",
+      "GDDR6X",
+      "HBM (High Bandwidth Memory)",
+      "LPDDR5"
+    ],
+    correct: 2,
+    explanation: "NVIDIA data center GPUs like A100 (HBM2e) and H100 (HBM3) use High Bandwidth Memory, which provides bandwidth of 2-3+ TB/s. This is critical for AI workloads where data must be fed to GPU cores at very high rates. GDDR6X is used in consumer GeForce cards."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "What is the purpose of NCCL in NVIDIA's software stack?",
+    options: [
+      "Compiling CUDA programs for different GPU architectures",
+      "Providing collective communication routines for distributed training across multiple GPUs",
+      "Managing container deployments on GPU clusters",
+      "Converting models between different deep learning frameworks"
+    ],
+    correct: 1,
+    explanation: "NCCL (NVIDIA Collective Communications Library) provides optimized collective communication primitives (AllReduce, AllGather, Broadcast, etc.) for distributed training across multiple GPUs and nodes. It is essential for scaling training workloads."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "NVIDIA RAPIDS is best described as:",
+    options: [
+      "An inference optimization toolkit",
+      "A suite of GPU-accelerated libraries for data science and analytics",
+      "A deep learning training framework",
+      "A network management platform"
+    ],
+    correct: 1,
+    explanation: "RAPIDS is a suite of open-source GPU-accelerated libraries for data science including cuDF (dataframes), cuML (machine learning), and cuGraph (graph analytics). It accelerates traditional data science workflows that typically run on CPU."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "Which NVIDIA solution provides a complete enterprise AI software platform with security, support, and management?",
+    options: [
+      "NGC",
+      "CUDA Toolkit",
+      "NVIDIA AI Enterprise",
+      "DGX OS"
+    ],
+    correct: 2,
+    explanation: "NVIDIA AI Enterprise is the enterprise software platform that includes certified containers, frameworks, and tools with enterprise support, security features, and management capabilities. NGC is the catalog, CUDA is the development platform, and DGX OS is the operating system for DGX systems."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "What is the key advantage of using mixed precision training (e.g., FP16/BF16 with FP32)?",
+    options: [
+      "It eliminates the need for GPUs entirely",
+      "It increases training speed and reduces memory usage while maintaining accuracy",
+      "It only works on CPUs, not GPUs",
+      "It improves inference latency but has no effect on training"
+    ],
+    correct: 1,
+    explanation: "Mixed precision training uses lower precision (FP16 or BF16) for most operations while keeping critical operations in FP32. This nearly doubles throughput, reduces memory consumption (allowing larger batch sizes or models), while maintaining model accuracy through loss scaling techniques."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "In which industry is NVIDIA DRIVE platform primarily used?",
+    options: [
+      "Healthcare drug discovery",
+      "Financial fraud detection",
+      "Autonomous vehicles and advanced driver assistance",
+      "Natural language processing for customer service"
+    ],
+    correct: 2,
+    explanation: "NVIDIA DRIVE is the platform for autonomous vehicles (AV) and advanced driver assistance systems (ADAS). It provides the compute platform, software stack, and simulation tools for developing self-driving technology."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "What is the purpose of cuDNN in the NVIDIA software stack?",
+    options: [
+      "GPU cluster management and orchestration",
+      "Optimized library of primitives for deep neural network operations",
+      "Data center networking protocol",
+      "File system for GPU-attached storage"
+    ],
+    correct: 1,
+    explanation: "cuDNN (CUDA Deep Neural Network library) provides highly optimized implementations of standard deep learning operations like convolutions, pooling, normalization, and activation functions. Deep learning frameworks like PyTorch and TensorFlow use cuDNN under the hood for GPU acceleration."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "Which of the following is a key difference between training and inference hardware requirements?",
+    options: [
+      "Training requires single GPU; inference always requires multi-GPU",
+      "Inference always uses FP32 precision while training uses INT8",
+      "Training typically benefits from high memory bandwidth and large GPU memory; inference prioritizes latency",
+      "There is no difference in hardware requirements between training and inference"
+    ],
+    correct: 2,
+    explanation: "Training benefits from large GPU memory (to hold model parameters, gradients, optimizer states), high memory bandwidth, and multi-GPU scaling. Inference prioritizes low latency and can often use smaller GPUs, lower precision, and optimized serving configurations."
+  },
+  {
+    domain: "essential",
+    domainLabel: "Essential AI Knowledge",
+    question: "What does the NVIDIA software lifecycle for AI deployment typically include in the optimization phase?",
+    options: [
+      "Collecting and labeling training data",
+      "Quantization, layer fusion, and kernel tuning to optimize the model for deployment",
+      "Writing the initial model architecture code",
+      "Setting up GPU cluster networking"
+    ],
+    correct: 1,
+    explanation: "The optimization phase uses tools like TensorRT to apply quantization (reducing precision to INT8/FP16), layer fusion (combining multiple operations), and kernel auto-tuning to maximize performance for deployment. This step comes after training and validation but before production deployment."
+  },
+
+  // === DOMAIN 2: AI Infrastructure (40%) - 20 questions ===
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "What is the primary function of NVLink in an NVIDIA DGX system?",
+    options: [
+      "Connecting the DGX system to the external network",
+      "Providing high-speed GPU-to-GPU interconnect within a node",
+      "Managing storage I/O between GPUs and NVMe drives",
+      "Connecting multiple DGX nodes across a data center"
+    ],
+    correct: 1,
+    explanation: "NVLink is a high-bandwidth, energy-efficient interconnect that enables direct GPU-to-GPU communication within a single server/node. It provides much higher bandwidth than PCIe. For connecting nodes across a cluster, InfiniBand or high-speed Ethernet is used."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "What role does NVSwitch play in a multi-GPU system?",
+    options: [
+      "It switches between different CUDA versions for compatibility",
+      "It provides a switch fabric enabling full-mesh NVLink connectivity among all GPUs in a node",
+      "It manages network traffic between data center racks",
+      "It switches GPU power states for energy efficiency"
+    ],
+    correct: 1,
+    explanation: "NVSwitch is a dedicated switch chip that connects all GPUs within a node via NVLink in a full-mesh topology, providing full bisection bandwidth. Without NVSwitch, NVLink connections would be point-to-point. NVSwitch makes all GPUs appear as a single, unified memory space."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "Which networking technology is primarily used for high-speed inter-node communication in AI clusters?",
+    options: [
+      "NVLink",
+      "PCIe Gen5",
+      "InfiniBand",
+      "USB 4.0"
+    ],
+    correct: 2,
+    explanation: "InfiniBand is the primary networking technology for connecting nodes in AI clusters. It provides high bandwidth (400 Gb/s with NDR), low latency, and native RDMA support. NVLink is for intra-node GPU-to-GPU, and PCIe connects devices within a single server."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "What is RDMA and why is it important for AI workloads?",
+    options: [
+      "Redundant Data Management Architecture - provides backup storage",
+      "Remote Direct Memory Access - enables direct memory transfer between machines without CPU involvement",
+      "Rapid Data Migration Algorithm - speeds up data preprocessing",
+      "Reliable Distributed Model Architecture - ensures model consistency across nodes"
+    ],
+    correct: 1,
+    explanation: "RDMA (Remote Direct Memory Access) allows data to be transferred directly between the memory of two machines without involving the CPU or operating system, dramatically reducing latency and CPU overhead. This is critical for distributed AI training where GPUs across nodes need to exchange gradients rapidly."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "What is the NVIDIA DGX platform?",
+    options: [
+      "A cloud computing service similar to AWS",
+      "An integrated AI system combining GPUs, CPUs, networking, storage, and software",
+      "A GPU driver management tool",
+      "A deep learning framework for training models"
+    ],
+    correct: 1,
+    explanation: "DGX is NVIDIA's purpose-built AI system that integrates multiple GPUs (e.g., 8x H100), CPUs, NVLink/NVSwitch, high-speed networking, NVMe storage, and pre-installed software (DGX OS) into a single turnkey platform for AI development and deployment."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "What is the primary purpose of the NVIDIA BlueField DPU?",
+    options: [
+      "Accelerating deep learning training computations",
+      "Offloading networking, storage, and security tasks from the CPU",
+      "Providing additional GPU memory for large models",
+      "Managing power distribution in the data center"
+    ],
+    correct: 1,
+    explanation: "The BlueField DPU (Data Processing Unit) offloads and accelerates infrastructure tasks - networking, storage, and security - from the CPU. This frees the CPU to focus on orchestrating AI workloads while the DPU handles data center infrastructure functions with its own ARM cores, networking engines, and hardware accelerators."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "What does GPUDirect RDMA enable?",
+    options: [
+      "Direct transfer of data between a GPU and a network adapter without going through CPU or system memory",
+      "Remote desktop access to GPU-accelerated workstations",
+      "Direct GPU-to-GPU transfers within the same PCIe bus",
+      "Automated GPU driver installation across the cluster"
+    ],
+    correct: 0,
+    explanation: "GPUDirect RDMA enables a direct data path between a GPU and a third-party network adapter (like InfiniBand HCA) or storage device, bypassing the CPU and system memory entirely. This significantly reduces latency and frees CPU resources for other tasks."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "What is the approximate power consumption of a single DGX H100 system?",
+    options: [
+      "1-2 kW",
+      "5-6 kW",
+      "10-11 kW",
+      "25-30 kW"
+    ],
+    correct: 2,
+    explanation: "A DGX H100 system consumes approximately 10.2 kW of power. This is significantly higher than traditional servers (1-2 kW), which is why AI data centers require special power and cooling considerations. A single rack of DGX systems can consume 40-60+ kW."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "Which cooling approach is becoming increasingly necessary for high-density AI data centers?",
+    options: [
+      "Standard air conditioning is sufficient for all AI workloads",
+      "Liquid cooling (direct-to-chip or immersion) due to high thermal density",
+      "Passive cooling without fans",
+      "Reducing GPU clock speeds to eliminate the need for cooling"
+    ],
+    correct: 1,
+    explanation: "High-density AI systems generate far more heat per rack than traditional IT. Liquid cooling (direct-to-chip or full immersion) is becoming necessary because air cooling alone cannot efficiently remove heat at 40-60+ kW per rack densities common in AI deployments."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "What is a key advantage of on-premises AI infrastructure over cloud?",
+    options: [
+      "Lower upfront costs",
+      "Faster time to deploy",
+      "Greater control over data sovereignty and security compliance",
+      "Automatic hardware upgrades"
+    ],
+    correct: 2,
+    explanation: "On-premises infrastructure provides full control over where data resides and how it is accessed, which is critical for data sovereignty requirements, regulatory compliance (GDPR, financial regulations), and organizations with strict security policies. Cloud offers advantages in flexibility and time-to-deploy."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "What is a DGX SuperPOD?",
+    options: [
+      "A single DGX server with extra storage",
+      "A cluster of multiple DGX systems connected with high-speed networking for large-scale AI",
+      "NVIDIA's cloud-hosted GPU service",
+      "A portable GPU workstation for fieldwork"
+    ],
+    correct: 1,
+    explanation: "A DGX SuperPOD is a large-scale AI cluster composed of multiple DGX systems interconnected with InfiniBand networking, along with shared storage and management infrastructure. It provides the scale needed for training the largest AI models."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "What is RoCE (RDMA over Converged Ethernet)?",
+    options: [
+      "A GPU architecture by NVIDIA",
+      "A protocol that enables RDMA capabilities over standard Ethernet networks",
+      "A type of NVLink connection",
+      "A power management standard for data centers"
+    ],
+    correct: 1,
+    explanation: "RoCE enables RDMA (Remote Direct Memory Access) over Ethernet infrastructure, providing an alternative to InfiniBand for high-performance networking. It allows organizations to leverage existing Ethernet infrastructure while gaining some RDMA benefits, though InfiniBand typically offers better performance for large-scale AI."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "What is the difference between NVIDIA DGX and HGX?",
+    options: [
+      "DGX is for inference only; HGX is for training only",
+      "DGX is a complete integrated system; HGX is a GPU baseboard for OEM server builders",
+      "HGX is newer and replaces DGX entirely",
+      "DGX uses NVIDIA GPUs; HGX uses third-party GPUs"
+    ],
+    correct: 1,
+    explanation: "DGX is NVIDIA's complete turnkey AI system (hardware + software + support). HGX is the multi-GPU baseboard/platform that NVIDIA sells to OEM partners (like HPE, Dell, Lenovo, Supermicro) who build their own server systems around it. Both use the same GPU technology."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "In a typical AI data center network topology, what architecture is most commonly used?",
+    options: [
+      "Ring topology",
+      "Bus topology",
+      "Spine-leaf (Clos) topology",
+      "Star topology with a single switch"
+    ],
+    correct: 2,
+    explanation: "Spine-leaf (Clos) architecture is the standard for modern AI data centers. It provides consistent low-latency, non-blocking bandwidth between any two nodes. Leaf switches connect to servers, and spine switches interconnect all leaf switches, ensuring predictable performance for distributed AI workloads."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "What is NVIDIA Spectrum-X designed for?",
+    options: [
+      "GPU memory management and allocation",
+      "Ethernet-based networking optimized for AI workloads",
+      "Audio/video streaming acceleration",
+      "CPU-to-GPU interconnect replacement"
+    ],
+    correct: 1,
+    explanation: "Spectrum-X is NVIDIA's Ethernet networking platform specifically optimized for AI workloads. It combines Spectrum switches with BlueField DPUs to deliver performance approaching InfiniBand over Ethernet infrastructure, for organizations that prefer Ethernet."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "What storage type is most critical for feeding data to GPUs during AI training?",
+    options: [
+      "Tape storage for archival",
+      "High-throughput parallel file systems (like Lustre or GPFS)",
+      "Standard SATA hard drives",
+      "USB flash drives"
+    ],
+    correct: 1,
+    explanation: "AI training requires high-throughput storage to keep GPUs fed with data. Parallel file systems like Lustre, GPFS (Spectrum Scale), and similar solutions provide the bandwidth and IOPs needed. GPUDirect Storage can further accelerate this by enabling direct data paths between storage and GPU memory."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "What is PUE (Power Usage Effectiveness) in the context of data centers?",
+    options: [
+      "The percentage of GPUs utilized in a cluster",
+      "A metric measuring total facility power divided by IT equipment power",
+      "The processing units per enclosure in a rack",
+      "The power supply redundancy level"
+    ],
+    correct: 1,
+    explanation: "PUE = Total Facility Power / IT Equipment Power. A PUE of 1.0 would mean all power goes to IT equipment (perfect efficiency). Typical data centers have PUE of 1.5-2.0, while modern efficient facilities aim for 1.1-1.3. AI data centers face PUE challenges due to high cooling requirements."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "What advantage does the NVIDIA Grace CPU provide when paired with Hopper GPUs?",
+    options: [
+      "It replaces the need for GPUs entirely",
+      "High-bandwidth, energy-efficient CPU-GPU connection via NVLink-C2C, reducing data transfer bottlenecks",
+      "It runs Windows-only workloads on the GPU",
+      "It provides dedicated storage management"
+    ],
+    correct: 1,
+    explanation: "The Grace CPU is NVIDIA's ARM-based CPU designed to pair with Hopper GPUs via NVLink-C2C (chip-to-chip), providing 900 GB/s coherent bandwidth between CPU and GPU. This eliminates the PCIe bottleneck and improves energy efficiency compared to traditional x86 CPU + GPU configurations."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "What is the primary consideration when scaling GPU infrastructure from a single server to a cluster?",
+    options: [
+      "The color of the server chassis",
+      "High-speed inter-node networking to minimize communication overhead during distributed training",
+      "Using consumer-grade GPUs to reduce costs",
+      "Ensuring all servers run different operating systems"
+    ],
+    correct: 1,
+    explanation: "When scaling to multi-node, the network between nodes becomes the critical bottleneck. High-speed networking (InfiniBand or high-performance Ethernet) with RDMA support is essential to minimize the communication overhead during gradient synchronization in distributed training."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Infrastructure",
+    question: "What is the NVIDIA ConnectX adapter?",
+    options: [
+      "A USB adapter for connecting external GPUs",
+      "A high-performance network adapter supporting InfiniBand and Ethernet with RDMA",
+      "A cable type for connecting monitors to GPUs",
+      "A software tool for connecting to NGC"
+    ],
+    correct: 1,
+    explanation: "ConnectX is NVIDIA's family of high-performance network adapters (SmartNICs) that support InfiniBand and Ethernet, with hardware offload for RDMA, GPUDirect, and other acceleration features. They are a key component in AI cluster networking."
+  },
+
+  // === DOMAIN 3: AI Operations (22%) - 11 questions ===
+  {
+    domain: "ops",
+    domainLabel: "AI Operations",
+    question: "What is NVIDIA DCGM primarily used for?",
+    options: [
+      "Compiling CUDA applications",
+      "Managing and monitoring NVIDIA GPUs in data center environments",
+      "Training deep learning models",
+      "Creating virtual GPU instances"
+    ],
+    correct: 1,
+    explanation: "DCGM (Data Center GPU Manager) is a suite of tools for managing and monitoring NVIDIA GPUs in cluster environments. It provides health monitoring, diagnostics, system alerts, governance policies, and telemetry. It integrates with Kubernetes via DCGM-Exporter."
+  },
+  {
+    domain: "ops",
+    domainLabel: "AI Operations",
+    question: "What is NVIDIA MIG (Multi-Instance GPU)?",
+    options: [
+      "A technology for connecting multiple GPU servers into a single cluster",
+      "A feature that partitions a single physical GPU into multiple isolated instances",
+      "A migration tool for moving VMs between GPU hosts",
+      "A monitoring interface for GPU performance"
+    ],
+    correct: 1,
+    explanation: "MIG partitions a single GPU (A100, H100, or newer) into up to 7 independent instances, each with dedicated compute, memory, and cache resources. Each MIG instance is fully isolated at the hardware level, making it ideal for multi-tenant environments and running multiple smaller workloads on one GPU."
+  },
+  {
+    domain: "infra",
+    domainLabel: "AI Operations",
+    question: "Which workload manager is commonly used for job scheduling in HPC and AI clusters?",
+    options: [
+      "Apache Kafka",
+      "Slurm",
+      "Jenkins",
+      "Ansible"
+    ],
+    correct: 1,
+    explanation: "Slurm (Simple Linux Utility for Resource Management) is the most widely used workload manager for HPC and AI clusters. It handles job scheduling, resource allocation (GPUs, CPUs, memory), queue management, and accounting. Jenkins is for CI/CD, Kafka for messaging, and Ansible for configuration management."
+  },
+  {
+    domain: "ops",
+    domainLabel: "AI Operations",
+    question: "How does Kubernetes integrate with NVIDIA GPUs?",
+    options: [
+      "Kubernetes natively supports GPUs without any additional components",
+      "Through the NVIDIA GPU Operator, which automates deployment of GPU drivers, container runtime, and device plugins",
+      "GPUs cannot be used with Kubernetes",
+      "Only through manual driver installation on every node"
+    ],
+    correct: 1,
+    explanation: "The NVIDIA GPU Operator automates the deployment and management of all NVIDIA software components needed for GPU support in Kubernetes: GPU drivers, container toolkit, device plugin, DCGM-Exporter, and MIG manager. It simplifies GPU management in containerized environments."
+  },
+  {
+    domain: "ops",
+    domainLabel: "AI Operations",
+    question: "Which GPU metric indicates that a GPU may be experiencing hardware reliability issues?",
+    options: [
+      "GPU utilization at 95%",
+      "High number of ECC memory errors",
+      "GPU temperature at 60 degrees C",
+      "Power draw at 80% of TDP"
+    ],
+    correct: 1,
+    explanation: "ECC (Error Correcting Code) errors indicate memory reliability issues. Single-bit correctable errors in small numbers are normal, but increasing ECC errors or uncorrectable (double-bit) errors signal potential hardware failure. High utilization, moderate temperature, and normal power draw are healthy signs."
+  },
+  {
+    domain: "ops",
+    domainLabel: "AI Operations",
+    question: "What is the difference between MIG and NVIDIA vGPU?",
+    options: [
+      "They are the same technology with different names",
+      "MIG provides hardware-level GPU partitioning; vGPU provides software-level GPU sharing through a hypervisor",
+      "MIG is for cloud only; vGPU is for on-premises only",
+      "vGPU is hardware partitioning; MIG is software virtualization"
+    ],
+    correct: 1,
+    explanation: "MIG is a hardware-based partitioning technology that divides a physical GPU into isolated instances at the hardware level. vGPU is a software-based solution that uses a hypervisor to share GPU resources among multiple virtual machines. MIG offers stronger isolation; vGPU offers more flexibility in VM-based environments."
+  },
+  {
+    domain: "ops",
+    domainLabel: "AI Operations",
+    question: "What does DCGM-Exporter provide in a Kubernetes environment?",
+    options: [
+      "Automatic GPU driver updates",
+      "GPU metrics export for monitoring systems like Prometheus",
+      "GPU-to-GPU data transfer acceleration",
+      "Automated model deployment to GPUs"
+    ],
+    correct: 1,
+    explanation: "DCGM-Exporter runs as a DaemonSet in Kubernetes and exports GPU telemetry (utilization, memory, temperature, ECC errors, etc.) in Prometheus format. This enables GPU monitoring through standard Kubernetes monitoring stacks (Prometheus + Grafana)."
+  },
+  {
+    domain: "ops",
+    domainLabel: "AI Operations",
+    question: "What is NVIDIA Base Command Manager used for?",
+    options: [
+      "Writing CUDA code",
+      "End-to-end management of AI clusters including provisioning, scheduling, monitoring, and user management",
+      "Managing NVIDIA consumer GPU driver updates",
+      "Designing neural network architectures"
+    ],
+    correct: 1,
+    explanation: "Base Command Manager is NVIDIA's comprehensive platform for managing AI infrastructure. It handles cluster provisioning, bare-metal deployment, job scheduling, user management, monitoring, and provides a unified interface for data center administrators managing GPU clusters."
+  },
+  {
+    domain: "ops",
+    domainLabel: "AI Operations",
+    question: "When would you choose Kubernetes over Slurm for AI workloads?",
+    options: [
+      "When running large-scale HPC batch training jobs",
+      "When serving inference workloads as microservices and needing cloud-native scalability",
+      "When you need to minimize the number of software components",
+      "Kubernetes and Slurm are always interchangeable"
+    ],
+    correct: 1,
+    explanation: "Kubernetes excels at inference serving, microservices, and cloud-native deployments where auto-scaling, rolling updates, and containerized services are important. Slurm is better suited for batch HPC/training jobs where users submit jobs to queues for GPU allocation."
+  },
+  {
+    domain: "ops",
+    domainLabel: "AI Operations",
+    question: "What does nvidia-smi provide?",
+    options: [
+      "A command-line interface for basic GPU monitoring including utilization, temperature, memory, and running processes",
+      "A graphical interface for designing neural networks",
+      "A tool for flashing GPU firmware",
+      "A programming interface for writing GPU kernels"
+    ],
+    correct: 0,
+    explanation: "nvidia-smi (NVIDIA System Management Interface) is a CLI tool that displays GPU status: utilization, memory usage, temperature, power draw, running processes, driver version, and more. It's the basic/quick tool for GPU monitoring, while DCGM provides enterprise-level monitoring with diagnostics and alerting."
+  },
+  {
+    domain: "ops",
+    domainLabel: "AI Operations",
+    question: "What is the primary benefit of GPU virtualization in enterprise AI environments?",
+    options: [
+      "It makes GPUs run faster than bare metal",
+      "It enables resource sharing, multi-tenancy, and workload isolation across multiple users or teams",
+      "It eliminates the need for GPU drivers",
+      "It converts CPUs into virtual GPUs"
+    ],
+    correct: 1,
+    explanation: "GPU virtualization (via vGPU or MIG) enables organizations to share expensive GPU resources among multiple users, teams, or workloads while maintaining isolation. This improves GPU utilization, enables multi-tenancy, and allows IT to manage GPU resources centrally."
+  }
+];
+
+// Shuffle utility
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// App state
+let state = {
+  screen: 'start',
+  mode: 'study', // 'study' or 'exam'
+  questions: [],
+  current: 0,
+  answers: {},
+  flagged: new Set(),
+  revealed: new Set(),
+  startTime: null,
+  elapsed: 0,
+  timerInterval: null
+};
+
+function startExam(mode) {
+  state.mode = mode;
+  state.questions = shuffle(QUESTIONS).slice(0, 50);
+  state.current = 0;
+  state.answers = {};
+  state.flagged = new Set();
+  state.revealed = new Set();
+  state.startTime = Date.now();
+  state.screen = 'exam';
+
+  if (mode === 'exam') {
+    state.timerInterval = setInterval(() => {
+      state.elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+      renderTimer();
+      if (state.elapsed >= 3600) {
+        finishExam();
+      }
+    }, 1000);
+  }
+  render();
+}
+
+function selectAnswer(idx) {
+  const qi = state.current;
+  if (state.mode === 'exam' && state.revealed.has(qi)) return;
+  state.answers[qi] = idx;
+
+  if (state.mode === 'study') {
+    state.revealed.add(qi);
+  }
+  render();
+}
+
+function revealAnswer() {
+  state.revealed.add(state.current);
+  render();
+}
+
+function nextQuestion() {
+  if (state.current < state.questions.length - 1) {
+    state.current++;
+    render();
+  }
+}
+
+function prevQuestion() {
+  if (state.current > 0) {
+    state.current--;
+    render();
+  }
+}
+
+function goToQuestion(idx) {
+  state.current = idx;
+  render();
+}
+
+function toggleFlag() {
+  const qi = state.current;
+  if (state.flagged.has(qi)) state.flagged.delete(qi);
+  else state.flagged.add(qi);
+  render();
+}
+
+function finishExam() {
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  state.screen = 'results';
+  render();
+}
+
+function resetExam() {
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  state.screen = 'start';
+  render();
+}
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const s = (seconds % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function renderTimer() {
+  const el = document.getElementById('timer');
+  if (!el) return;
+  const remaining = Math.max(0, 3600 - state.elapsed);
+  el.textContent = formatTime(remaining);
+  el.className = 'timer' + (remaining < 300 ? ' danger' : remaining < 600 ? ' warning' : '');
+}
+
+function getScore() {
+  let correct = 0;
+  let byDomain = { essential: { correct: 0, total: 0 }, infra: { correct: 0, total: 0 }, ops: { correct: 0, total: 0 } };
+
+  state.questions.forEach((q, i) => {
+    const d = q.domain;
+    byDomain[d].total++;
+    if (state.answers[i] === q.correct) {
+      correct++;
+      byDomain[d].correct++;
+    }
+  });
+
+  return { correct, total: state.questions.length, byDomain };
+}
+
+function render() {
+  const app = document.getElementById('app');
+
+  if (state.screen === 'start') {
+    app.innerHTML = renderStartScreen();
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.mode = btn.dataset.mode;
+        document.getElementById('mode-desc').textContent =
+          state.mode === 'study'
+            ? 'See correct answers immediately after each question. Best for learning.'
+            : 'Timed exam simulation (60 min). Answers revealed at the end.';
+      });
+    });
+    document.getElementById('start-btn').addEventListener('click', () => startExam(state.mode));
+    return;
+  }
+
+  if (state.screen === 'exam') {
+    app.innerHTML = renderExamScreen();
+    attachExamListeners();
+    return;
+  }
+
+  if (state.screen === 'results') {
+    app.innerHTML = renderResultsScreen();
+    document.getElementById('restart-btn')?.addEventListener('click', resetExam);
+    document.getElementById('review-btn')?.addEventListener('click', () => {
+      state.screen = 'review';
+      render();
+    });
+    return;
+  }
+
+  if (state.screen === 'review') {
+    app.innerHTML = renderReviewScreen();
+    document.getElementById('back-btn')?.addEventListener('click', () => {
+      state.screen = 'results';
+      render();
+    });
+    return;
+  }
+}
+
+function renderStartScreen() {
+  return `
+    <div class="start-screen">
+      <h2>NCA-AIIO Practice Exam</h2>
+      <p class="subtitle">NVIDIA Certified Associate: AI Infrastructure and Operations</p>
+      <div class="exam-info">
+        <div class="info-card">
+          <div class="label">Questions</div>
+          <div class="value">50</div>
+        </div>
+        <div class="info-card">
+          <div class="label">Time Limit</div>
+          <div class="value">60 min</div>
+        </div>
+        <div class="info-card">
+          <div class="label">Domains</div>
+          <div class="value">3</div>
+        </div>
+      </div>
+      <div class="mode-select">
+        <button class="mode-btn active" data-mode="study">Study Mode</button>
+        <button class="mode-btn" data-mode="exam">Exam Mode</button>
+      </div>
+      <p class="mode-desc" id="mode-desc">See correct answers immediately after each question. Best for learning.</p>
+      <button class="btn btn-primary" id="start-btn" style="padding: 14px 48px; font-size: 16px;">Start Practice</button>
+    </div>
+  `;
+}
+
+function renderExamScreen() {
+  const q = state.questions[state.current];
+  const qi = state.current;
+  const answered = state.answers[qi] !== undefined;
+  const revealed = state.revealed.has(qi);
+  const letters = ['A', 'B', 'C', 'D'];
+  const domainClass = q.domain === 'essential' ? 'essential' : q.domain === 'infra' ? 'infra' : 'ops';
+
+  let optionsHtml = q.options.map((opt, i) => {
+    let cls = 'option';
+    if (revealed) {
+      cls += ' disabled';
+      if (i === q.correct) cls += ' correct';
+      else if (state.answers[qi] === i && i !== q.correct) cls += ' incorrect';
+    } else if (state.answers[qi] === i) {
+      cls += ' selected';
+    }
+    return `
+      <div class="${cls}" data-idx="${i}">
+        <div class="option-letter">${letters[i]}</div>
+        <div class="option-text">${opt}</div>
+      </div>
+    `;
+  }).join('');
+
+  let explanationHtml = '';
+  if (revealed) {
+    const isCorrect = state.answers[qi] === q.correct;
+    explanationHtml = `
+      <div class="explanation show">
+        <strong>${isCorrect ? '✓ Correct' : '✗ Incorrect - Answer: ' + letters[q.correct]}</strong><br>
+        ${q.explanation}
+      </div>
+    `;
+  }
+
+  let actionsHtml = '';
+  if (state.mode === 'study') {
+    actionsHtml = `
+      <div class="actions">
+        <button class="btn btn-secondary" id="prev-btn" ${qi === 0 ? 'disabled' : ''}>← Previous</button>
+        <div style="display:flex;gap:8px;align-items:center;">
+          ${answered && !revealed ? '<button class="btn btn-primary" id="check-btn">Check Answer</button>' : ''}
+          ${revealed ? `<button class="btn btn-primary" id="next-btn">${qi < state.questions.length - 1 ? 'Next →' : 'Finish'}</button>` : ''}
+        </div>
+      </div>
+    `;
+  } else {
+    actionsHtml = `
+      <div class="actions">
+        <button class="btn btn-secondary" id="prev-btn" ${qi === 0 ? 'disabled' : ''}>← Previous</button>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn btn-primary" id="next-btn">${qi < state.questions.length - 1 ? 'Next →' : 'Submit Exam'}</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Question navigator
+  let qNavHtml = '<div class="q-nav">';
+  for (let i = 0; i < state.questions.length; i++) {
+    let cls = 'q-nav-btn';
+    if (i === qi) cls += ' current';
+    if (state.answers[i] !== undefined) cls += ' answered';
+    if (state.flagged.has(i)) cls += ' flagged';
+    qNavHtml += `<button class="${cls}" data-qi="${i}">${i + 1}</button>`;
+  }
+  qNavHtml += '</div>';
+
+  return `
+    <div class="header">
+      <h1>NCA-AIIO Practice</h1>
+      <div style="display:flex;align-items:center;gap:12px;">
+        ${state.mode === 'exam' ? '<div class="timer" id="timer">60:00</div>' : ''}
+        <span class="badge">${state.mode === 'study' ? 'Study' : 'Exam'}</span>
+      </div>
+    </div>
+    <div class="progress-container">
+      <div class="progress-info">
+        <span>Question ${qi + 1} of ${state.questions.length}</span>
+        <span>${Object.keys(state.answers).length} answered</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: ${((qi + 1) / state.questions.length) * 100}%"></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span class="domain-tag ${domainClass}">${q.domainLabel}</span>
+      <button class="flag-btn ${state.flagged.has(qi) ? 'flagged' : ''}" id="flag-btn">${state.flagged.has(qi) ? '⚑ Flagged' : '⚐ Flag'}</button>
+    </div>
+    <div class="question-text">${q.question}</div>
+    <div class="options">${optionsHtml}</div>
+    ${explanationHtml}
+    ${actionsHtml}
+    ${qNavHtml}
+  `;
+}
+
+function attachExamListeners() {
+  const qi = state.current;
+  const revealed = state.revealed.has(qi);
+
+  if (!revealed || state.mode === 'exam') {
+    document.querySelectorAll('.option:not(.disabled)').forEach(opt => {
+      opt.addEventListener('click', () => selectAnswer(parseInt(opt.dataset.idx)));
+    });
+  }
+
+  document.getElementById('prev-btn')?.addEventListener('click', prevQuestion);
+  document.getElementById('flag-btn')?.addEventListener('click', toggleFlag);
+
+  if (state.mode === 'study') {
+    document.getElementById('check-btn')?.addEventListener('click', revealAnswer);
+    document.getElementById('next-btn')?.addEventListener('click', () => {
+      if (qi >= state.questions.length - 1) finishExam();
+      else nextQuestion();
+    });
+  } else {
+    document.getElementById('next-btn')?.addEventListener('click', () => {
+      if (qi >= state.questions.length - 1) {
+        const unanswered = state.questions.length - Object.keys(state.answers).length;
+        if (unanswered > 0) {
+          if (!confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`)) return;
+        }
+        finishExam();
+      } else nextQuestion();
+    });
+    if (state.mode === 'exam') renderTimer();
+  }
+
+  document.querySelectorAll('.q-nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => goToQuestion(parseInt(btn.dataset.qi)));
+  });
+}
+
+function renderResultsScreen() {
+  const score = getScore();
+  const pct = Math.round((score.correct / score.total) * 100);
+  const passed = pct >= 70;
+
+  const domains = [
+    { key: 'essential', name: 'Essential AI Knowledge', weight: '38%', color: '#5BA8FF' },
+    { key: 'infra', name: 'AI Infrastructure', weight: '40%', color: '#00E5B0' },
+    { key: 'ops', name: 'AI Operations', weight: '22%', color: '#FFB84D' }
+  ];
+
+  let domainHtml = domains.map(d => {
+    const ds = score.byDomain[d.key];
+    const dpct = ds.total > 0 ? Math.round((ds.correct / ds.total) * 100) : 0;
+    return `
+      <div class="domain-row">
+        <div class="domain-name">${d.name} <span style="color:var(--text-dim);font-size:12px;">(${d.weight})</span></div>
+        <div class="domain-bar">
+          <div class="domain-bar-fill" style="width:${dpct}%;background:${d.color};"></div>
+        </div>
+        <div class="domain-score" style="color:${dpct >= 70 ? 'var(--correct)' : 'var(--incorrect)'}">${ds.correct}/${ds.total} (${dpct}%)</div>
+      </div>
+    `;
+  }).join('');
+
+  const elapsed = state.mode === 'exam' ? formatTime(state.elapsed) : 'N/A';
+
+  return `
+    <div class="results-screen">
+      <h2>${passed ? 'Practice Passed' : 'Needs More Study'}</h2>
+      <p style="text-align:center;color:var(--text-dim);font-size:14px;">
+        ${passed ? 'You reached the passing threshold. Keep studying the weak areas.' : 'Focus on the domains below where you scored under 70%.'}
+      </p>
+      <div class="score-display">
+        <div class="score-circle ${passed ? 'pass' : 'fail'}">
+          <div class="score-number">${pct}%</div>
+          <div class="score-label">${score.correct}/${score.total}</div>
+        </div>
+        <p style="color:var(--text-dim);font-size:13px;">
+          ${state.mode === 'exam' ? 'Time: ' + elapsed : 'Study mode - no time limit'}
+          &nbsp;|&nbsp; Passing: 70%
+        </p>
+      </div>
+      <div class="domain-breakdown">${domainHtml}</div>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:24px;">
+        <button class="btn btn-secondary" id="review-btn">Review Answers</button>
+        <button class="btn btn-primary" id="restart-btn">Try Again</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderReviewScreen() {
+  const letters = ['A', 'B', 'C', 'D'];
+
+  let itemsHtml = state.questions.map((q, i) => {
+    const userAnswer = state.answers[i];
+    const isCorrect = userAnswer === q.correct;
+    const domainClass = q.domain === 'essential' ? 'essential' : q.domain === 'infra' ? 'infra' : 'ops';
+
+    return `
+      <div class="review-item ${isCorrect ? 'was-correct' : 'was-incorrect'}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span class="domain-tag ${domainClass}" style="margin-bottom:0;">${q.domainLabel}</span>
+          <span style="font-size:12px;color:var(--text-dim);">Q${i + 1}</span>
+        </div>
+        <div class="review-q">${q.question}</div>
+        <div class="review-answer">
+          ${userAnswer !== undefined
+            ? `Your answer: <span class="${isCorrect ? 'correct-text' : 'incorrect-text'}">${letters[userAnswer]}. ${q.options[userAnswer]}</span>`
+            : '<span class="incorrect-text">Not answered</span>'}
+          ${!isCorrect ? `<br>Correct: <span class="correct-text">${letters[q.correct]}. ${q.options[q.correct]}</span>` : ''}
+        </div>
+        <div class="explanation show" style="margin-top:8px;">${q.explanation}</div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="header">
+      <h1>Answer Review</h1>
+      <button class="btn btn-secondary" id="back-btn">← Back to Results</button>
+    </div>
+    ${itemsHtml}
+  `;
+}
+
+// Init
+render();
+</script>
+</body>
+</html>
